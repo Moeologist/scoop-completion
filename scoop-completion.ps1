@@ -225,7 +225,7 @@ function Get-AliasPattern($exe) {
 }
 
 if (Test-Path Function:\TabExpansion) {
-	Rename-Item Function:\TabExpansion TabExpansionBackup
+	Rename-Item Function:\TabExpansion TabExpansionBackup_Scooped
 }
 
 function TabExpansion($line, $lastWord) {

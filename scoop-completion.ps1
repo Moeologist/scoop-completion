@@ -163,42 +163,42 @@ function ScoopTabExpansion($lastBlock) {
 
 		# Handles uninstall package names
 		"^(uninstall|cleanup|virustotal|update|prefix|reset)\s+([\-\w][\-\.\w]*\s+)*(?<package>[\w][\-\.\w]*)?$" {
-			ScoopLocalPackages $matches['package']
+			return ScoopLocalPackages $matches['package']
 		}
 
 		# Handles install package names
 		"^(install|info|home|depends)\s+([\-\w][\-\.\w]*\s+)*(?<package>[\w][\-\.\w]*)?$" {
-			ScoopRemotePackages $matches['package']
+			return ScoopRemotePackages $matches['package']
 		}
 
 		# Handles cache (rm/show) cache names
 		"^cache (rm|show)\s+([\-\w][\-\.\w]*\s+)*(?<cache>[\w][\-\.\w]*)?$" {
-			ScoopLocalCaches $matches['cache']
+			return ScoopLocalCaches $matches['cache']
 		}
 
 		# Handles bucket rm bucket names
 		"^bucket rm\s+([\-\w][\-\.\w]*\s+)*(?<bucket>[\w][\-\.\w]*)?$" {
-			ScoopLocalBuckets $matches['bucket']
+			return ScoopLocalBuckets $matches['bucket']
 		}
 
 		# Handles bucket add bucket names
 		"^bucket add\s+([\-\w][\-\.\w]*\s+)*(?<bucket>[\w][\-\.\w]*)?$" {
-			ScoopRemoteBuckets $matches['bucket']
+			return ScoopRemoteBuckets $matches['bucket']
 		}
 
 		# Handles bucket rm bucket names
 		"^alias rm\s+([\-\w][\-\.\w]*\s+)*(?<alias>[\w][\-\.\w]*)?$" {
-			ScoopAlias $matches['alias']
+			return ScoopAlias $matches['alias']
 		}
 
 		#Handles Scoop help <cmd>
 		"^help (?<cmd>\S*)$" {
-			ScoopExpandCmd $matches['cmd'] $false
+			return ScoopExpandCmd $matches['cmd'] $false
 		}
 
 		# Handles Scoop <cmd> <subcmd>
 		"^(?<cmd>$($ScoopSubcommands.Keys -join '|'))\s+(?<op>\S*)$" {
-			ScoopExpandCmdParams $ScoopSubcommands $matches['cmd'] $matches['op']
+			return ScoopExpandCmdParams $ScoopSubcommands $matches['cmd'] $matches['op']
 		}
 
 		# Handles Scoop <cmd>
@@ -208,13 +208,12 @@ function ScoopTabExpansion($lastBlock) {
 
 		# Handles Scoop <cmd> --<param>
 		"^(?<cmd>$ScoopCommandsWithLongParams).* --(?<param>\S*)$" {
-			ScoopExpandLongParams $matches['cmd'] $matches['param']
+			return ScoopExpandLongParams $matches['cmd'] $matches['param']
 		}
-
 
 		# Handles Scoop <cmd> -<shortparam>
 		"^(?<cmd>$ScoopCommandsWithShortParams).* -(?<shortparam>\S*)$" {
-			ScoopExpandShortParams $matches['cmd'] $matches['shortparam']
+			return ScoopExpandShortParams $matches['cmd'] $matches['shortparam']
 		}
 	}
 }
@@ -225,7 +224,7 @@ function Get-AliasPattern($exe) {
 }
 
 if (Test-Path Function:\TabExpansion) {
-	Rename-Item Function:\TabExpansion TabExpansionBackup_Scooped
+	Rename-Item Function:\TabExpansion TabExpansionBackup_Scoop
 }
 
 function TabExpansion($line, $lastWord) {
@@ -239,8 +238,8 @@ function TabExpansion($line, $lastWord) {
 
 		# Fall back on existing tab expansion
 		default {
-			if (Test-Path Function:\TabExpansionBackup) {
-				TabExpansionBackup $line $lastWord
+			if (Test-Path Function:\TabExpansionBackup_Scoop) {
+				TabExpansionBackup_Scoop $line $lastWord
 			}
 		}
 	}

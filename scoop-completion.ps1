@@ -1,4 +1,7 @@
 # Thanks to Posh-Git - https://github.com/dahlbyk/posh-git
+if ( -not (Get-Variable ScoopCompletionUseLocalData -Scope Global -ErrorAction SilentlyContinue)) {
+	$global:ScoopCompletionUseLocalData = $true
+}
 
 $script:ScoopCommands = @('alias', 'bucket', 'cache', 'checkup', 'cleanup', 'config', 'create', 'depends', 'export', 'help', 'home',
 	'info', 'install', 'list', 'prefix', 'reset', 'search', 'status', 'uninstall', 'update', 'virustotal', 'which')
@@ -82,25 +85,42 @@ function script:ScoopExpandCmd($filter, $includeAliases) {
 }
 
 function script:ScoopLocalPackages($filter) {
-	@(& scoop list 6>&1 |
-			Where-Object { $_ -match '^\s*([\w][\-\.\w]*) $' } |
-			ForEach-Object { $_ -replace '^\s*([\w][\-\.\w]*) $', '$1' } |
-			Where-Object { $_ -like "$filter*" }
-	)
+	if ($global:ScoopCompletionUseLocalData) {
+		@(& Get-ChildItem -Path $env:SCOOP\apps -Name -Directory |
+				Where-Object { $_ -ne "scoop" } |
+				Where-Object { $_ -like "$filter*" }
+		)
+	}
+	else {
+		@(& scoop list 6>&1 |
+				Where-Object { $_ -match '^\s*([\w][\-\.\w]*) $' } |
+				ForEach-Object { $_ -replace '^\s*([\w][\-\.\w]*) $', '$1' } |
+				Where-Object { $_ -like "$filter*" }
+		)
+	}
 }
 
 $script:ScoopRemoteCache = @()
 function script:ScoopRemotePackages($filter) {
-	if ($script:ScoopRemoteCache.Count -eq 0) {
-		$script:ScoopRemoteCache = @(& scoop search 6>&1 |
-				Where-Object { $_ -match '^\s*([\w][\-\.\w]*) \(.+\)$' } |
-				ForEach-Object { $_ -replace '^\s*([\w][\-\.\w]*) \(.+\)$', '$1' } |
-				Sort-Object -Unique
+	if ($global:ScoopCompletionUseLocalData) {
+		@(& Get-ChildItem -Path $env:SCOOP\apps\scoop\current\bucket\, $env:SCOOP\buckets\ -Name -Recurse -Filter *.json |
+				Where-Object { $_ -match '^.*?([\w][\-\.\w]*)\.json$' } |
+				ForEach-Object { $_ -replace '^.*?([\w][\-\.\w]*)\.json$', '$1' } |
+				Where-Object { $_ -like "$filter*" }
 		)
 	}
-	@($script:ScoopRemoteCache |
-			Where-Object { $_ -like "$filter*" }
-	)
+	else {
+		if ($script:ScoopRemoteCache.Count -eq 0) {
+			$script:ScoopRemoteCache = @(& scoop search 6>&1 |
+					Where-Object { $_ -match '^\s*([\w][\-\.\w]*) \(.+\)$' } |
+					ForEach-Object { $_ -replace '^\s*([\w][\-\.\w]*) \(.+\)$', '$1' } |
+					Sort-Object -Unique
+			)
+		}
+		@($script:ScoopRemoteCache |
+				Where-Object { $_ -like "$filter*" }
+		)
+	}
 }
 
 function script:ScoopLocalCaches($filter) {

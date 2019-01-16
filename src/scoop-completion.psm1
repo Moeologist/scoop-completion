@@ -1,4 +1,5 @@
 # Thanks to Posh-Git - https://github.com/dahlbyk/posh-git
+
 if ( -not (Get-Variable ScoopCompletionUseLocalData -Scope Global -ErrorAction SilentlyContinue)) {
 	$global:ScoopCompletionUseLocalData = $true
 }
@@ -10,6 +11,7 @@ $script:ScoopSubcommands = @{
 	alias  = 'add list rm'
 	bucket = 'add list known rm'
 	cache  = 'rm show'
+	config  = 'rm'
 }
 
 $script:ScoopShortParams = @{
@@ -43,12 +45,11 @@ $script:ScoopCommandsWithLongParams = $ScoopLongParams.Keys -join '|'
 $script:ScoopCommandsWithShortParams = $ScoopShortParams.Keys -join '|'
 $script:ScoopCommandsWithParamValues = $ScoopParamValues.Keys -join '|'
 
-# 6> redirect Write-Host output, a hack
+# 6> redirect Write-Host's output, (〒︿〒)
 function script:ScoopAlias($fliter) {
 	@(& scoop alias list 6>$null |
 			Out-String -Stream |
-			Where-Object { $_ -match '^([\w]+)\s+.*$'} |
-			ForEach-Object { $_ -replace '^([\w]+)\s+.*$', '$1' } |
+			ForEach-Object { if ( $_ -match '^([\w]+)\s+.*$' ) { "$($Matches[1])" } } |
 			Where-Object { $_ -like "$filter*" }
 	)
 }
@@ -56,8 +57,7 @@ function script:ScoopAlias($fliter) {
 function script:ScoopAliasCommand($alias) {
 	@(& scoop alias list 6>$null |
 			Out-String -Stream |
-			Where-Object { $_ -match "^$alias\s+.*$" } |
-			ForEach-Object { $_ -replace "^$alias\s+(.*)$", '$1' }
+			ForEach-Object { if ( $_ -match "^$alias\s+(.*)$" ) { "$($Matches[1])" } }
 	)
 }
 
@@ -93,8 +93,7 @@ function script:ScoopLocalPackages($filter) {
 	}
 	else {
 		@(& scoop list 6>&1 |
-				Where-Object { $_ -match '^\s*([\w][\-\.\w]*) $' } |
-				ForEach-Object { $_ -replace '^\s*([\w][\-\.\w]*) $', '$1' } |
+				ForEach-Object { if ( $_ -match '^\s*([\w][\-\.\w]*) $' ) { "$($Matches[1])" } } |
 				Where-Object { $_ -like "$filter*" }
 		)
 	}
@@ -104,16 +103,14 @@ $script:ScoopRemoteCache = @()
 function script:ScoopRemotePackages($filter) {
 	if ($global:ScoopCompletionUseLocalData) {
 		@(& Get-ChildItem -Path $env:SCOOP\apps\scoop\current\bucket\, $env:SCOOP\buckets\ -Name -Recurse -Filter *.json |
-				Where-Object { $_ -match '^.*?([\w][\-\.\w]*)\.json$' } |
-				ForEach-Object { $_ -replace '^.*?([\w][\-\.\w]*)\.json$', '$1' } |
+				ForEach-Object { if ( $_ -match '^.*?([\w][\-\.\w]*)\.json$' ) { "$($Matches[1])" } } |
 				Where-Object { $_ -like "$filter*" }
 		)
 	}
 	else {
 		if ($script:ScoopRemoteCache.Count -eq 0) {
 			$script:ScoopRemoteCache = @(& scoop search 6>&1 |
-					Where-Object { $_ -match '^\s*([\w][\-\.\w]*) \(.+\)$' } |
-					ForEach-Object { $_ -replace '^\s*([\w][\-\.\w]*) \(.+\)$', '$1' } |
+					ForEach-Object { if ( $_ -match '^\s*([\w][\-\.\w]*) \(.+\)$' ) { "$($Matches[1])" } } |
 					Sort-Object -Unique
 			)
 		}
@@ -126,8 +123,7 @@ function script:ScoopRemotePackages($filter) {
 function script:ScoopLocalCaches($filter) {
 	@(& scoop cache show $filter |
 			Out-String -Stream |
-			Where-Object { $_ -match '^\s*[\.1-9]+ [KMGB]+ ([\w][\-\.\w]*) .*$' } |
-			ForEach-Object { $_ -replace '^\s*[\.1-9]+ [KMGB]+ ([\w][\-\.\w]*) .*$', '$1' } |
+			ForEach-Object { if ( $_ -match '^\s*[\.1-9]+ [KMGB]+ ([\w][\-\.\w]*) .*$' ) { "$($Matches[1])" } } |			
 			Sort-Object -Unique |
 			Where-Object { $_ -like "$filter*" }
 	)
@@ -266,3 +262,11 @@ function TabExpansion($line, $lastWord) {
 }
 
 Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
+
+$exportModuleMemberParams = @{
+    Function = @(
+        'TabExpansion'
+    )
+}
+
+Export-ModuleMember @exportModuleMemberParams

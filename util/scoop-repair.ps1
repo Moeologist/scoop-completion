@@ -1,16 +1,16 @@
 # Usage: scoop repair
 # Summary: Reinstall failed apps
 
-. "$psscriptroot\..\apps\scoop\current\lib\core.ps1"
-. "$psscriptroot\..\apps\scoop\current\lib\manifest.ps1"
-. "$psscriptroot\..\apps\scoop\current\lib\buckets.ps1"
-. "$psscriptroot\..\apps\scoop\current\lib\versions.ps1"
-. "$psscriptroot\..\apps\scoop\current\lib\depends.ps1"
-. "$psscriptroot\..\apps\scoop\current\lib\config.ps1"
-. "$psscriptroot\..\apps\scoop\current\lib\decompress.ps1"
-. "$psscriptroot\..\apps\scoop\current\lib\install.ps1"
-. "$psscriptroot\..\apps\scoop\current\lib\shortcuts.ps1"
-. "$psscriptroot\..\apps\scoop\current\lib\psmodules.ps1"
+. "$psscriptroot\..\lib\core.ps1"
+. "$psscriptroot\..\lib\manifest.ps1"
+. "$psscriptroot\..\lib\buckets.ps1"
+. "$psscriptroot\..\lib\versions.ps1"
+. "$psscriptroot\..\lib\depends.ps1"
+. "$psscriptroot\..\lib\config.ps1"
+. "$psscriptroot\..\lib\decompress.ps1"
+. "$psscriptroot\..\lib\install.ps1"
+. "$psscriptroot\..\lib\shortcuts.ps1"
+. "$psscriptroot\..\lib\psmodules.ps1"
 
 reset_aliases
 

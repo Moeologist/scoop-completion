@@ -64,10 +64,10 @@ function script:ScoopAliasCommand($alias) {
 function script:ScoopExpandAlias($cmd, $others) {
 	$alias = ScoopAliasCommand $cmd
 	if ($alias) {
-		return "scoop $alias$others"
+		return "scoop $alias $others"
 	}
 	else {
-		return "scoop $cmd$others"
+		return "scoop $cmd $others"
 	}
 }
 
@@ -158,11 +158,11 @@ function script:ScoopExpandParamValues($cmd, $param, $filter) {
 }
 
 function ScoopTabExpansion($lastBlock) {
-	if ($lastBlock -match "^$(Get-AliasPattern scoop) (?<cmd>\S+)(?<others> .*)$") {
+	if ($lastBlock -match "^$(Get-AliasPattern scoop)\s+(?<cmd>\S+)\s+(?<others>.*)$") {
 		$lastBlock = $(ScoopExpandAlias $matches['cmd'] $matches['others'])
 	}
 
-	switch -regex ($lastBlock -replace "^$(Get-AliasPattern scoop) ", "") {
+	switch -regex ($lastBlock -replace "^$(Get-AliasPattern scoop)\s+", "") {
 		# Handles Scoop <cmd> --<param> <value>
 		"^(?<cmd>$ScoopCommandsWithParamValues).* --(?<param>.+) (?<value>\w*)$" {
 			if ($ScoopParamValues[$matches['cmd']][$matches['param']]) {
@@ -178,32 +178,32 @@ function ScoopTabExpansion($lastBlock) {
 		}
 
 		# Handles uninstall package names
-		"^(uninstall|cleanup|virustotal|update|prefix|reset)\s+([\-\w][\-\.\w]*\s+)*(?<package>[\w][\-\.\w]*)?$" {
+		"^(uninstall|cleanup|virustotal|update|prefix|reset)\s+(?:.+\s+)?(?<package>[\w][\-\.\w]*)?$" {
 			return ScoopLocalPackages $matches['package']
 		}
 
 		# Handles install package names
-		"^(install|info|home|depends)\s+([\-\w][\-\.\w]*\s+)*(?<package>[\w][\-\.\w]*)?$" {
+		"^(install|info|home|depends)\s+(?:.+\s+)?(?<package>[\w][\-\.\w]*)?$" {
 			return ScoopRemotePackages $matches['package']
 		}
 
 		# Handles cache (rm/show) cache names
-		"^cache (rm|show)\s+([\-\w][\-\.\w]*\s+)*(?<cache>[\w][\-\.\w]*)?$" {
+		"^cache (rm|show)\s+(?:.+\s+)?(?<cache>[\w][\-\.\w]*)?$" {
 			return ScoopLocalCaches $matches['cache']
 		}
 
 		# Handles bucket rm bucket names
-		"^bucket rm\s+([\-\w][\-\.\w]*\s+)*(?<bucket>[\w][\-\.\w]*)?$" {
+		"^bucket rm\s+(?:.+\s+)?(?<bucket>[\w][\-\.\w]*)?$" {
 			return ScoopLocalBuckets $matches['bucket']
 		}
 
 		# Handles bucket add bucket names
-		"^bucket add\s+([\-\w][\-\.\w]*\s+)*(?<bucket>[\w][\-\.\w]*)?$" {
+		"^bucket add\s+(?:.+\s+)?(?<bucket>[\w][\-\.\w]*)?$" {
 			return ScoopRemoteBuckets $matches['bucket']
 		}
 
 		# Handles bucket rm bucket names
-		"^alias rm\s+([\-\w][\-\.\w]*\s+)*(?<alias>[\w][\-\.\w]*)?$" {
+		"^alias rm\s+(?:.+\s+)?(?<alias>[\w][\-\.\w]*)?$" {
 			return ScoopAlias $matches['alias']
 		}
 
@@ -235,7 +235,7 @@ function ScoopTabExpansion($lastBlock) {
 }
 
 function Get-AliasPattern($exe) {
-	$aliases = @($exe) + @(Get-Alias | Where-Object { $_.Definition -eq $exe } | Select-Object -Exp Name)
+	$aliases = @($exe, "$exe\.ps1", "$exe\.cmd") + @(Get-Alias | Where-Object { $_.Definition -eq $exe } | Select-Object -Exp Name)
 	"($($aliases -join '|'))"
 }
 

@@ -6,7 +6,7 @@ Description = 'A Scoop tab completion for PowerShell.'
 RootModule = 'scoop-completion.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.0.2'
+ModuleVersion = '0.0.3'
 
 # ID used to uniquely identify this module
 GUID = 'e79be23b-d149-46c8-85a3-620f2669d2e1'
@@ -31,7 +31,7 @@ PrivateData =
 		LicenseUri = 'https://opensource.org/licenses/MIT'
 
 		# A URL to the main website for this project.
-		ProjectUri = 'https://github.com/liuzijing97/scoop-auto-completion'
+		ProjectUri = 'https://github.com/liuzijing97/scoop-completion'
     }
 }
 

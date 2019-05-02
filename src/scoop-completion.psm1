@@ -89,7 +89,7 @@ function script:ScoopExpandCmd($filter, $includeAliases) {
 
 function script:ScoopLocalPackages($filter) {
 	if ($global:ScoopCompletionUseLocalData) {
-		@(& Get-ChildItem -Path $env:SCOOP\apps -Name -Directory |
+		@(& Get-ChildItem -Path $env:USERPROFILE\scoop\apps -Name -Directory |
 				Where-Object { $_ -ne "scoop" } |
 				Where-Object { $_ -like "$filter*" }
 		)
@@ -105,7 +105,7 @@ function script:ScoopLocalPackages($filter) {
 $script:ScoopRemoteCache = @()
 function script:ScoopRemotePackages($filter) {
 	if ($global:ScoopCompletionUseLocalData) {
-		@(& Get-ChildItem -Path $env:SCOOP\apps\scoop\current\bucket\, $env:SCOOP\buckets\ -Name -Recurse -Filter *.json |
+		@(& Get-ChildItem -Path $env:USERPROFILE\scoop\apps\scoop\current\bucket\, $env:USERPROFILE\scoop\buckets\ -Name -Recurse -Filter *.json |
 				ForEach-Object { if ( $_ -match '^.*?([\w][\-\.\w]*)\.json$' ) { "$($Matches[1])" } } |
 				Where-Object { $_ -like "$filter*" }
 		)

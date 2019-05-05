@@ -2,26 +2,31 @@
 
 presuppositions:
 * scoop
-* powershell
+* powershell **(powershell github version not respect $env:PSModulePath)**
 
 install via scoop from GitHub:
 ```powershell
 # install
 scoop install https://raw.githubusercontent.com/liuzijing97/scoop-completion/master/bucket/scoop-completion.json
 
-# enable completion in current shell
-Import-Module scoop-completion
-
-# enable auto-load
-if(!(Test-Path $Profile -PathType Leaf)) { New-Item -Force $Profile 1>$null 2>$null }
-Add-Content -Path $Profile -Value "`nImport-Module scoop-completion"
-
-# (powershell github version) not respect $env:PSModulePath, see below
-Import-Module $env:SCOOP/modules/scoop-completion
-Add-Content -Path $Profile -Value "`nImport-Module $env:SCOOP/modules/scoop-completion"
-
 # auto update bucket
 scoop bucket add scoop-completion https://github.com/liuzijing97/scoop-completion
+
+# enable completion in current shell (pwsh not work, see below)
+Import-Module scoop-completion
+
+# enable auto-load, create profile if not exist
+Add-Content -Path $Profile -Value "`nImport-Module scoop-completion"
+
+-------------------------------------------------------------------------------
+#(powershell github version) not respect $env:PSModulePath
+
+#enable
+if (!(Test-Path -Path "$env:SCOOP")) { $env:SCOOP = "$env:USERPROFILE\scoop" }
+Import-Module $env:SCOOP/modules/scoop-completion
+
+#autoload
+Add-Content -Path $Profile -Value "`nImport-Module $env:SCOOP/modules/scoop-completion"
 ```
 
 
@@ -32,7 +37,7 @@ Import-Module scoop-completion
 Add-Content -Path $Profile -Value "`nImport-Module scoop-completion"
 ```
 
-usage (**only support powershell**):
+usage:
 ```powershell
 Type "scoop [something]" and press Tab key
 ```

@@ -1,5 +1,8 @@
 # Thanks to Posh-Git - https://github.com/dahlbyk/posh-git
 
+if (!(Test-Path -Path "$env:SCOOP")) { $env:SCOOP = "$env:USERPROFILE\scoop" }
+if (!(Test-Path -Path "$env:SCOOP")) { Write-Warning 'no scoop installed' }
+
 if ( -not (Get-Variable ScoopCompletionUseLocalData -Scope Global -ErrorAction SilentlyContinue)) {
 	$global:ScoopCompletionUseLocalData = $true
 }
@@ -123,7 +126,7 @@ function script:ScoopRemotePackages($filter) {
 function script:ScoopLocalCaches($filter) {
 	@(& scoop cache show $filter |
 			Out-String -Stream |
-			ForEach-Object { if ( $_ -match '^\s*[\.1-9]+ [KMGB]+ ([\w][\-\.\w]*) .*$' ) { "$($Matches[1])" } } |			
+			ForEach-Object { if ( $_ -match '^\s*[\.1-9]+ [KMGB]+ ([\w][\-\.\w]*) .*$' ) { "$($Matches[1])" } } |
 			Sort-Object -Unique |
 			Where-Object { $_ -like "$filter*" }
 	)
@@ -169,7 +172,7 @@ function ScoopTabExpansion($lastBlock) {
 				return ScoopExpandParamValues $matches['cmd'] $matches['param'] $matches['value']
 			}
 		}
-				
+
 		# Handles Scoop <cmd> -<shortparam> <value>
 		"^(?<cmd>$ScoopCommandsWithParamValues).* -(?<param>.+) (?<value>\w*)$" {
 			if ($ScoopParamValues[$matches['cmd']][$matches['param']]) {

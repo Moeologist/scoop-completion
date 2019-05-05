@@ -1,14 +1,15 @@
 {
     "homepage": "https://github.com/liuzijing97/scoop-completion",
     "license": "MIT",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "url": "https://codeload.github.com/liuzijing97/scoop-completion/zip/master#/dl.7z",
     "extract_dir": "scoop-completion-master/src",
 	"psmodule": {
         "name": "scoop-completion"
     },
 	"##": [
-		"if(!(Test-Path $Profile -PathType Leaf)) { New-Item -Force $Profile 1>$null 2>$null }",
+        "if(!(Test-Path $Profile -PathType Leaf)) { New-Item -Force $Profile 1>$null 2>$null }",
+        "if (-not (Test-Path \"$env:SCOOP\")) { $env:SCOOP = \"$env:USERPROFILE\\scoop\" }",
 		"Add-Content -Path $Profile -Value \"`nImport-Module $env:SCOOP/modules/scoop-completion\""
 	]
 }

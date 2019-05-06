@@ -1,7 +1,8 @@
 # Thanks to Posh-Git - https://github.com/dahlbyk/posh-git
 
-if (!(Test-Path -Path "$env:SCOOP")) { $env:SCOOP = "$env:USERPROFILE\scoop" }
-if (!(Test-Path -Path "$env:SCOOP")) { Write-Warning 'no scoop installed' }
+$scoopdir = $env:SCOOP, "$env:USERPROFILE\scoop" | Select-Object -first 1
+
+if (!(Test-Path -Path "$scoopdir")) { Write-Warning 'no scoop installed' }
 
 if ( -not (Get-Variable ScoopCompletionUseLocalData -Scope Global -ErrorAction SilentlyContinue)) {
 	$global:ScoopCompletionUseLocalData = $true
@@ -89,7 +90,7 @@ function script:ScoopExpandCmd($filter, $includeAliases) {
 
 function script:ScoopLocalPackages($filter) {
 	if ($global:ScoopCompletionUseLocalData) {
-		@(& Get-ChildItem -Path $env:SCOOP\apps -Name -Directory |
+		@(& Get-ChildItem -Path $scoopdir\apps -Name -Directory |
 				Where-Object { $_ -ne "scoop" } |
 				Where-Object { $_ -like "$filter*" }
 		)
@@ -105,7 +106,7 @@ function script:ScoopLocalPackages($filter) {
 $script:ScoopRemoteCache = @()
 function script:ScoopRemotePackages($filter) {
 	if ($global:ScoopCompletionUseLocalData) {
-		@(& Get-ChildItem -Path $env:SCOOP\apps\scoop\current\bucket\, $env:SCOOP\buckets\ -Name -Recurse -Filter *.json |
+		@(& Get-ChildItem -Path $scoopdir\apps\scoop\current\bucket\, $scoopdir\buckets\ -Name -Recurse -Filter *.json |
 				ForEach-Object { if ( $_ -match '^.*?([\w][\-\.\w]*)\.json$' ) { "$($Matches[1])" } } |
 				Where-Object { $_ -like "$filter*" }
 		)

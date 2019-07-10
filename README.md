@@ -6,11 +6,13 @@ presuppositions:
 
 install via scoop from GitHub:
 ```powershell
-# install
-scoop install https://raw.githubusercontent.com/liuzijing97/scoop-completion/master/bucket/scoop-completion.json
-
-# auto update bucket
+# add scoop-completion bucket
 scoop bucket add scoop-completion https://github.com/liuzijing97/scoop-completion
+
+# install (from added bucket)
+scoop install scoop-completion
+# or install without a bucket
+# scoop install https://raw.githubusercontent.com/liuzijing97/scoop-completion/master/bucket/scoop-completion.json
 
 # enable completion in current shell (pwsh not work, see below)
 Import-Module scoop-completion
@@ -18,8 +20,8 @@ Import-Module scoop-completion
 # enable auto-load, create profile if not exist
 Add-Content -Path $Profile -Value "`nImport-Module scoop-completion"
 
--------------------------------------------------------------------------------
-#(powershell github version) not respect $env:PSModulePath
+--------------------------------------------------------------------------------------------
+# powershell github version (aka pwsh or powershell core) does not respect $env:PSModulePath
 
 #enable
 if (!(Test-Path -Path "$env:SCOOP")) { $env:SCOOP = "$env:USERPROFILE\scoop" }

@@ -2,8 +2,14 @@
     "homepage": "https://github.com/liuzijing97/scoop-completion",
     "license": "MIT",
     "version": "0.0.4",
-    "url": "https://codeload.github.com/liuzijing97/scoop-completion/zip/master#/dl.7z",
-    "extract_dir": "scoop-completion-master/src",
+    "url": [
+		"https://raw.githubusercontent.com/liuzijing97/scoop-completion/master/src/scoop-completion.psm1",
+		"https://raw.githubusercontent.com/liuzijing97/scoop-completion/master/src/scoop-completion.psd1"
+	],
+	"hash": [
+		"fd13190631d5ac41a34267b07dca58b5e679a9c6e565a1ab70f59d6027411e13",
+		"45d3a787da5b78b5fad249669f0f227031093392e9378d8829714e1b016fa05b"
+	],
 	"psmodule": {
         "name": "scoop-completion"
     },

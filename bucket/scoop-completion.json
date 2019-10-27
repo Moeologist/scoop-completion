@@ -1,21 +1,16 @@
 {
-    "homepage": "https://github.com/liuzijing97/scoop-completion",
+    "homepage": "https://github.com/Moeologist/scoop-completion",
     "license": "MIT",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "url": [
-		"https://raw.githubusercontent.com/liuzijing97/scoop-completion/master/src/scoop-completion.psm1",
-		"https://raw.githubusercontent.com/liuzijing97/scoop-completion/master/src/scoop-completion.psd1"
+		"https://raw.githubusercontent.com/Moeologist/scoop-completion/master/src/scoop-completion.psm1",
+		"https://raw.githubusercontent.com/Moeologist/scoop-completion/master/src/scoop-completion.psd1"
 	],
 	"hash": [
-		"fd13190631d5ac41a34267b07dca58b5e679a9c6e565a1ab70f59d6027411e13",
-		"45d3a787da5b78b5fad249669f0f227031093392e9378d8829714e1b016fa05b"
+		"90cf04f8f732d0aed36c912b0cb0c0bc8dc2142e2d4ab8c4130fcb65dbfbdcab",
+		"c12736fbb7329064ccec40d3dd977c99ba34215206ff4cf10a78231ce1223067"
 	],
 	"psmodule": {
         "name": "scoop-completion"
-    },
-	"##": [
-        "if(!(Test-Path $Profile -PathType Leaf)) { New-Item -Force $Profile 1>$null 2>$null }",
-        "if (-not (Test-Path \"$env:SCOOP\")) { $env:SCOOP = \"$env:USERPROFILE\\scoop\" }",
-		"Add-Content -Path $Profile -Value \"`nImport-Module $env:SCOOP/modules/scoop-completion\""
-	]
+    }
 }

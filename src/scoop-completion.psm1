@@ -8,8 +8,8 @@ if ( -not (Get-Variable ScoopCompletionUseLocalData -Scope Global -ErrorAction S
 	$global:ScoopCompletionUseLocalData = $true
 }
 
-$script:ScoopCommands = @('alias', 'bucket', 'cache', 'checkup', 'cleanup', 'config', 'create', 'depends', 'export', 'help', 'home',
-	'info', 'install', 'list', 'prefix', 'reset', 'search', 'status', 'uninstall', 'update', 'virustotal', 'which')
+$script:ScoopCommands = @('alias', 'bucket', 'cache', 'checkup', 'cleanup', 'config', 'create', 'depends', 'export', 'help', 'hold', 'home',
+	'info', 'install', 'list', 'prefix', 'reset', 'repair', 'search', 'status', 'unhold', 'uninstall', 'update', 'virustotal', 'which')
 
 $script:ScoopSubcommands = @{
 	alias  = 'add list rm'
@@ -182,7 +182,7 @@ function ScoopTabExpansion($lastBlock) {
 		}
 
 		# Handles uninstall package names
-		"^(uninstall|cleanup|virustotal|update|prefix|reset)\s+(?:.+\s+)?(?<package>[\w][\-\.\w]*)?$" {
+		"^(uninstall|cleanup|virustotal|update|prefix|reset|hold|unhold)\s+(?:.+\s+)?(?<package>[\w][\-\.\w]*)?$" {
 			return ScoopLocalPackages $matches['package']
 		}
 
@@ -211,7 +211,7 @@ function ScoopTabExpansion($lastBlock) {
 			return ScoopAlias $matches['alias']
 		}
 
-		#Handles Scoop help <cmd>
+		# Handles Scoop help <cmd>
 		"^help (?<cmd>\S*)$" {
 			return ScoopExpandCmd $matches['cmd'] $false
 		}
@@ -223,7 +223,7 @@ function ScoopTabExpansion($lastBlock) {
 
 		# Handles Scoop <cmd>
 		"^(?<cmd>\S*)$" {
-			ScoopExpandCmd $matches['cmd'] $true
+			return ScoopExpandCmd $matches['cmd'] $true
 		}
 
 		# Handles Scoop <cmd> --<param>

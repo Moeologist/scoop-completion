@@ -1,6 +1,6 @@
 # scoop 自动补全
 
-[English](https://github.com/liuzijing97/scoop-completion/blob/master/README.md)
+[English](https://github.com/Moeologist/scoop-completion/blob/master/README.md)
 
 依赖:
 * scoop
@@ -10,7 +10,7 @@
 ```powershell
 
 # add auto-update bucket
-scoop bucket add scoop-completion https://github.com/liuzijing97/scoop-completion
+scoop bucket add scoop-completion https://github.com/Moeologist/scoop-completion
 
 # install
 scoop install scoop-completion

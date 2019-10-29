@@ -1,3 +1,5 @@
+# This source code is licensed under the MIT License
+# Project URL - https://github.com/Moeologist/scoop-completion
 # Thanks to Posh-Git - https://github.com/dahlbyk/posh-git
 
 $scoopdir = $env:SCOOP, "$env:USERPROFILE\scoop" | Select-Object -first 1

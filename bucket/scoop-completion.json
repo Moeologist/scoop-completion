@@ -1,14 +1,14 @@
 {
     "homepage": "https://github.com/Moeologist/scoop-completion",
     "license": "MIT",
-    "version": "0.0.5",
+    "version": "0.1.0",
     "url": [
 		"https://raw.githubusercontent.com/Moeologist/scoop-completion/master/src/scoop-completion.psm1",
 		"https://raw.githubusercontent.com/Moeologist/scoop-completion/master/src/scoop-completion.psd1"
 	],
 	"hash": [
-		"90cf04f8f732d0aed36c912b0cb0c0bc8dc2142e2d4ab8c4130fcb65dbfbdcab",
-		"c12736fbb7329064ccec40d3dd977c99ba34215206ff4cf10a78231ce1223067"
+		"9cb7a5411c3eb3e78055fab1913407251d596a0e87181aeb5ec304fb4ca407a9",
+		"a188de3f9f427bc56603cac71f78e6262d91def243e7bd649b7c74efb88a0f76"
 	],
 	"psmodule": {
         "name": "scoop-completion"

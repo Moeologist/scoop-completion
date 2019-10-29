@@ -9,7 +9,7 @@ if ( -not (Get-Variable ScoopCompletionUseLocalData -Scope Global -ErrorAction S
 }
 
 $script:ScoopCommands = @('alias', 'bucket', 'cache', 'checkup', 'cleanup', 'config', 'create', 'depends', 'export', 'help', 'hold', 'home',
-	'info', 'install', 'list', 'prefix', 'reset', 'repair', 'search', 'status', 'unhold', 'uninstall', 'update', 'virustotal', 'which')
+	'info', 'install', 'list', 'prefix', 'reset', 'search', 'status', 'unhold', 'uninstall', 'update', 'virustotal', 'which')
 
 $script:ScoopSubcommands = @{
 	alias  = 'add list rm'

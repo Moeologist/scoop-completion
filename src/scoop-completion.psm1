@@ -267,8 +267,6 @@ function TabExpansion($line, $lastWord) {
 	}
 }
 
-Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
-
 $exportModuleMemberParams = @{
     Function = @(
         'TabExpansion'

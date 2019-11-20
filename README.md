@@ -22,9 +22,10 @@ $profile.CurrentUserAllHosts | $profile.AllUsersCurrentHost | $profile.AllUsersA
 instead of $profile,
 scoop-completion will work for
 allhosts | allusers | both
+[Docs](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-6#the-profile-variable)
 ```powershell
 # get scoop installation
-$scoopdir = $(Get-Command scoop).Path, $env:SCOOP, "$env:USERPROFILE\scoop" | Select-Object -first 1
+$scoopdir = (Get-Item (Get-Command scoop).Path).Directory.Parent.FullName, $env:SCOOP, "$env:USERPROFILE\scoop" | Select-Object -first 1
 
 # enable completion in current shell
 Import-Module "$scoopdir\modules\scoop-completion"

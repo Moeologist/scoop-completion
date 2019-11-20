@@ -21,8 +21,9 @@ scoop install scoop-completion
 $profile.CurrentUserAllHosts | $profile.AllUsersCurrentHost | $profile.AllUsersAllHosts
 替代 $profile，
 scoop-completion 将为 其他Host | 其他用户 | 两者工作
+[Docs](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-6#the-profile-variable)
 ```powershell
-$scoopdir = $(Get-Command scoop).Path, $env:SCOOP, "$env:USERPROFILE\scoop" | Select-Object -first 1
+$scoopdir = (Get-Item (Get-Command scoop).Path).Directory.Parent.FullName, $env:SCOOP, "$env:USERPROFILE\scoop" | Select-Object -first 1
 
 # enable completion in current shell
 Import-Module "$scoopdir\modules\scoop-completion"

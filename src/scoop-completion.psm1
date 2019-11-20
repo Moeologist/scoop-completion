@@ -2,9 +2,10 @@
 # Project URL - https://github.com/Moeologist/scoop-completion
 # Thanks to Posh-Git - https://github.com/dahlbyk/posh-git
 
-$scoopdir = $env:SCOOP, "$env:USERPROFILE\scoop" | Select-Object -first 1
-
-if (!(Test-Path -Path "$scoopdir")) { Write-Warning 'no scoop installed' }
+try {
+	$scoopdir = $(Get-Item $(Get-Command -ErrorAction Stop scoop).Path).Directory.Parent.FullName
+}
+catch { Write-Warning 'no scoop installed' }
 
 if ( -not (Get-Variable ScoopCompletionUseLocalData -Scope Global -ErrorAction SilentlyContinue)) {
 	$global:ScoopCompletionUseLocalData = $true
@@ -60,6 +61,7 @@ ForEach-Object { if ( $_ -match '^(?<alias>[\w]+)\s+(?<cmd>.*)$' ) {
 		$script:ScoopAliasMap[$matches['alias']] = $matches['cmd'].TrimEnd() 
 	} 
 }
+
 function script:ScoopAlias($filter) {
 	@($script:ScoopAliasMap.Keys |
 		Where-Object { $_ -like "$filter*" }

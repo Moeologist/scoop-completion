@@ -23,7 +23,8 @@ $profile.CurrentUserAllHosts | $profile.AllUsersCurrentHost | $profile.AllUsersA
 scoop-completion 将为 其他Host | 其他用户 | 两者工作
 [Docs](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-6#the-profile-variable)
 ```powershell
-$scoopdir = (Get-Item (Get-Command scoop).Path).Directory.Parent.FullName, $env:SCOOP, "$env:USERPROFILE\scoop" | Select-Object -first 1
+# get scoop installation
+$scoopdir = $(Get-Item $(Get-Command scoop).Path).Directory.Parent.FullName
 
 # enable completion in current shell
 Import-Module "$scoopdir\modules\scoop-completion"

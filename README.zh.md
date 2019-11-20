@@ -18,9 +18,9 @@ scoop install scoop-completion
 
 在当前 shell 启用补全并启用自动加载，
 如果使用
-$profile.CurrentUserAllHosts|$profile.AllUsersCurrentHost|$profile.AllUsersAllHosts
+$profile.CurrentUserAllHosts | $profile.AllUsersCurrentHost | $profile.AllUsersAllHosts
 替代 $profile，
-scoop-completion 将为 其他Host|其他用户|两者工作
+scoop-completion 将为 其他Host | 其他用户 | 两者工作
 ```powershell
 $scoopdir = $(Get-Command scoop).Path, $env:SCOOP, "$env:USERPROFILE\scoop" | Select-Object -first 1
 

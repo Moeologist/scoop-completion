@@ -18,9 +18,10 @@ scoop install scoop-completion
 
 enable completion in current shell and auto-load,
 use
-$profile.CurrentUserAllHosts|$profile.AllUsersCurrentHost|$profile.AllUsersAllHosts
+$profile.CurrentUserAllHosts | $profile.AllUsersCurrentHost | $profile.AllUsersAllHosts
 instead of $profile,
-scoop-completion will work for allhosts|allusers|both
+scoop-completion will work for
+allhosts | allusers | both
 ```powershell
 # get scoop installation
 $scoopdir = $(Get-Command scoop).Path, $env:SCOOP, "$env:USERPROFILE\scoop" | Select-Object -first 1

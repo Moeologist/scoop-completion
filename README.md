@@ -16,16 +16,23 @@ scoop bucket add scoop-completion https://github.com/Moeologist/scoop-completion
 scoop install scoop-completion
 ```
 
-enable completion in current shell and auto-load
+enable completion in current shell and auto-load,
+use
+$profile.CurrentUserAllHosts|$profile.AllUsersCurrentHost|$profile.AllUsersAllHosts
+instead of $profile,
+scoop-completion will work for allhosts|allusers|both
 ```powershell
-# check scoop installation
-if (!(Test-Path -Path "$env:SCOOP")) { $env:SCOOP = "$env:USERPROFILE\scoop" }
+# get scoop installation
+$scoopdir = $(Get-Command scoop).Path, $env:SCOOP, "$env:USERPROFILE\scoop" | Select-Object -first 1
 
 # enable completion in current shell
-Import-Module "$env:SCOOP/modules/scoop-completion"
+Import-Module "$scoopdir\modules\scoop-completion"
+
+# create profile if not exist
+if (!(Test-Path $profile)) { New-Item -Path $profile -ItemType "file" -Force }
 
 # enable auto-load
-Add-Content -Path $Profile -Value "`nImport-Module `"$env:SCOOP/modules/scoop-completion`""
+Add-Content -Path $profile -Value "`nImport-Module `"$scoopdir\modules\scoop-completion`""
 ```
 
 
@@ -33,12 +40,10 @@ install from PSGallery **(deprecated)**:
 ```powershell
 Install-Module -AllowClobber -Name scoop-completion -Scope CurrentUser
 Import-Module scoop-completion
-Add-Content -Path $Profile -Value "`nImport-Module scoop-completion"
+if (!(Test-Path $profile)) { New-Item -Path $profile -ItemType "file" -Force }
+Add-Content -Path $profile -Value "`nImport-Module scoop-completion"
 ```
 
 usage:
-```powershell
-Type "scoop [something]" and press Tab key
-```
 
-zsh completion was in /zsh directory
+Type "scoop [something]" and press Tab key

@@ -16,16 +16,22 @@ scoop bucket add scoop-completion https://github.com/Moeologist/scoop-completion
 scoop install scoop-completion
 ```
 
-在当前 shell 启用补全并启用自动加载
+在当前 shell 启用补全并启用自动加载，
+如果使用
+$profile.CurrentUserAllHosts|$profile.AllUsersCurrentHost|$profile.AllUsersAllHosts
+替代 $profile，
+scoop-completion 将为 其他Host|其他用户|两者工作
 ```powershell
-# check scoop installation
-if (!(Test-Path -Path "$env:SCOOP")) { $env:SCOOP = "$env:USERPROFILE\scoop" }
+$scoopdir = $(Get-Command scoop).Path, $env:SCOOP, "$env:USERPROFILE\scoop" | Select-Object -first 1
 
 # enable completion in current shell
-Import-Module "$env:SCOOP/modules/scoop-completion"
+Import-Module "$scoopdir\modules\scoop-completion"
+
+# create profile if not exist
+if (!(Test-Path $profile)) { New-Item -Path $profile -ItemType "file" -Force }
 
 # enable auto-load
-Add-Content -Path $Profile -Value "`nImport-Module `"$env:SCOOP/modules/scoop-completion`""
+Add-Content -Path $profile -Value "`nImport-Module `"$scoopdir\modules\scoop-completion`""
 ```
 
 
@@ -33,12 +39,10 @@ Add-Content -Path $Profile -Value "`nImport-Module `"$env:SCOOP/modules/scoop-co
 ```powershell
 Install-Module -AllowClobber -Name scoop-completion -Scope CurrentUser
 Import-Module scoop-completion
-Add-Content -Path $Profile -Value "`nImport-Module scoop-completion"
+if (!(Test-Path $profile)) { New-Item -Path $profile -ItemType "file" -Force }
+Add-Content -Path $profile -Value "`nImport-Module scoop-completion"
 ```
 
 用法:
-```powershell
-输入 "scoop [任何命令]" 然后按 Tab 键
-```
 
-zsh 版补全在 /zsh 文件夹
+输入 "scoop [想补全的单词]" 然后按 Tab 键

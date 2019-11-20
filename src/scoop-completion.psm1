@@ -8,6 +8,7 @@ if (!(Test-Path -Path "$scoopdir")) { Write-Warning 'no scoop installed' }
 
 if ( -not (Get-Variable ScoopCompletionUseLocalData -Scope Global -ErrorAction SilentlyContinue)) {
 	$global:ScoopCompletionUseLocalData = $true
+	$global:ScoopCompletionUseWordMatch = $false
 }
 
 $script:ScoopCommands = @('alias', 'bucket', 'cache', 'checkup', 'cleanup', 'config', 'create', 'depends', 'export', 'help', 'hold', 'home',
@@ -17,7 +18,7 @@ $script:ScoopSubcommands = @{
 	alias  = 'add list rm'
 	bucket = 'add list known rm'
 	cache  = 'rm show'
-	config  = 'rm'
+	config = 'rm'
 }
 
 $script:ScoopShortParams = @{
@@ -52,29 +53,17 @@ $script:ScoopCommandsWithShortParams = $ScoopShortParams.Keys -join '|'
 $script:ScoopCommandsWithParamValues = $ScoopParamValues.Keys -join '|'
 
 # 6> redirect Write-Host's output, (〒︿〒)
-function script:ScoopAlias($fliter) {
-	@(& scoop alias list 6>$null |
-			Out-String -Stream |
-			ForEach-Object { if ( $_ -match '^([\w]+)\s+.*$' ) { "$($Matches[1])" } } |
-			Where-Object { $_ -like "$filter*" }
-	)
+$script:ScoopAliasMap = @{ }
+& scoop alias list 6>$null |
+Out-String -Stream |
+ForEach-Object { if ( $_ -match '^(?<alias>[\w]+)\s+(?<cmd>.*)$' ) {
+		$script:ScoopAliasMap[$matches['alias']] = $matches['cmd'].TrimEnd() 
+	} 
 }
-
-function script:ScoopAliasCommand($alias) {
-	@(& scoop alias list 6>$null |
-			Out-String -Stream |
-			ForEach-Object { if ( $_ -match "^$alias\s+(.*)$" ) { "$($Matches[1])" } }
+function script:ScoopAlias($filter) {
+	@($script:ScoopAliasMap.Keys |
+		Where-Object { $_ -like "$filter*" }
 	)
-}
-
-function script:ScoopExpandAlias($cmd, $others) {
-	$alias = ScoopAliasCommand $cmd
-	if ($alias) {
-		return "scoop $alias $others"
-	}
-	else {
-		return "scoop $cmd $others"
-	}
 }
 
 function script:ScoopExpandCmdParams($commands, $command, $filter) {
@@ -83,55 +72,59 @@ function script:ScoopExpandCmdParams($commands, $command, $filter) {
 
 function script:ScoopExpandCmd($filter, $includeAliases) {
 	$cmdList = @()
-	$cmdList += $ScoopCommands -like "$filter*"
+	$cmdList += $ScoopCommands
 	if ($includeAliases) {
 		$cmdList += ScoopAlias
 	}
-	$cmdList | Sort-Object
+	$cmdList -like "$filter*" | Sort-Object
 }
 
 function script:ScoopLocalPackages($filter) {
 	if ($global:ScoopCompletionUseLocalData) {
 		@(& Get-ChildItem -Path $scoopdir\apps -Name -Directory |
-				Where-Object { $_ -ne "scoop" } |
-				Where-Object { $_ -like "$filter*" }
+			Where-Object { $_ -ne "scoop" } |
+			Where-Object { $_ -like "$filter*" }
 		)
 	}
 	else {
 		@(& scoop list 6>&1 |
-				ForEach-Object { if ( $_ -match '^\s*([\w][\-\.\w]*) $' ) { "$($Matches[1])" } } |
-				Where-Object { $_ -like "$filter*" }
+			ForEach-Object { if ( $_ -match '^\s*([\w][\-\.\w]*) $' ) { "$($Matches[1])" } } |
+			Where-Object { $_ -like "$filter*" }
 		)
 	}
 }
 
 $script:ScoopRemoteCache = @()
+$script:ScoopRemoteCacheNoInit = $true
 function script:ScoopRemotePackages($filter) {
 	if ($global:ScoopCompletionUseLocalData) {
-		@(& Get-ChildItem -Path $scoopdir\apps\scoop\current\bucket\, $scoopdir\buckets\ -Name -Recurse -Filter *.json |
-				ForEach-Object { if ( $_ -match '^.*?([\w][\-\.\w]*)\.json$' ) { "$($Matches[1])" } } |
-				Where-Object { $_ -like "$filter*" }
+		# FIXME:remove Recurse
+		@(& Get-ChildItem -Path $scoopdir\buckets\ -Name | 
+			ForEach-Object { Get-ChildItem -Path $scoopdir\buckets\$_\bucket -Name -Filter *.json } |
+			ForEach-Object { if ( $_ -match '^.*?([\w][\-\.\w]*)\.json$' ) { "$($Matches[1])" } } |
+			Where-Object { $_ -like "$filter*" }
 		)
 	}
 	else {
-		if ($script:ScoopRemoteCache.Count -eq 0) {
+		if ($script:ScoopRemoteCacheNoInit) {
 			$script:ScoopRemoteCache = @(& scoop search 6>&1 |
-					ForEach-Object { if ( $_ -match '^\s*([\w][\-\.\w]*) \(.+\)$' ) { "$($Matches[1])" } } |
-					Sort-Object -Unique
+				ForEach-Object { if ( $_ -match '^\s*([\w][\-\.\w]*) \(.+\)$' ) { "$($Matches[1])" } } |
+				Sort-Object -Unique
 			)
+			$script:ScoopRemoteCacheNoInit = $false
 		}
 		@($script:ScoopRemoteCache |
-				Where-Object { $_ -like "$filter*" }
+			Where-Object { $_ -like "$filter*" }
 		)
 	}
 }
 
 function script:ScoopLocalCaches($filter) {
 	@(& scoop cache show $filter |
-			Out-String -Stream |
-			ForEach-Object { if ( $_ -match '^\s*[\.1-9]+ [KMGB]+ ([\w][\-\.\w]*) .*$' ) { "$($Matches[1])" } } |
-			Sort-Object -Unique |
-			Where-Object { $_ -like "$filter*" }
+		Out-String -Stream |
+		ForEach-Object { if ( $_ -match '^\s*[\.1-9]+ [KMGB]+ ([\w][\-\.\w]*) .*$' ) { "$($Matches[1])" } } |
+		Sort-Object -Unique |
+		Where-Object { $_ -like "$filter*" }
 	)
 }
 
@@ -145,30 +138,27 @@ function script:ScoopRemoteBuckets($filter) {
 
 function script:ScoopExpandLongParams($cmd, $filter) {
 	$ScoopLongParams[$cmd] -split ' ' |
-		Where-Object { $_ -like "$filter*" } |
-		Sort-Object |
-		ForEach-Object { -join ("--", $_) }
+	Where-Object { $_ -like "$filter*" } |
+	Sort-Object |
+	ForEach-Object { -join ("--", $_) }
 }
 
 function script:ScoopExpandShortParams($cmd, $filter) {
 	$ScoopShortParams[$cmd] -split ' ' |
-		Where-Object { $_ -like "$filter*" } |
-		Sort-Object |
-		ForEach-Object { -join ("-", $_) }
+	Where-Object { $_ -like "$filter*" } |
+	Sort-Object |
+	ForEach-Object { -join ("-", $_) }
 }
 
 function script:ScoopExpandParamValues($cmd, $param, $filter) {
 	$ScoopParamValues[$cmd][$param] -split ' ' |
-		Where-Object { $_ -like "$filter*" } |
-		Sort-Object
+	Where-Object { $_ -like "$filter*" } |
+	Sort-Object
 }
 
-function ScoopTabExpansion($lastBlock) {
-	if ($lastBlock -match "^$(Get-AliasPattern scoop)\s+(?<cmd>\S+)\s+(?<others>.*)$") {
-		$lastBlock = $(ScoopExpandAlias $matches['cmd'] $matches['others'])
-	}
+function script:ScoopTabExpansion($lastBlock) {
 
-	switch -regex ($lastBlock -replace "^$(Get-AliasPattern scoop)\s+", "") {
+	switch -regex ($lastBlock) {
 		# Handles Scoop <cmd> --<param> <value>
 		"^(?<cmd>$ScoopCommandsWithParamValues).* --(?<param>.+) (?<value>\w*)$" {
 			if ($ScoopParamValues[$matches['cmd']][$matches['param']]) {
@@ -208,7 +198,7 @@ function ScoopTabExpansion($lastBlock) {
 			return ScoopRemoteBuckets $matches['bucket']
 		}
 
-		# Handles bucket rm bucket names
+		# Handles alias rm alias names
 		"^alias rm\s+(?:.+\s+)?(?<alias>[\w][\-\.\w]*)?$" {
 			return ScoopAlias $matches['alias']
 		}
@@ -240,7 +230,7 @@ function ScoopTabExpansion($lastBlock) {
 	}
 }
 
-function Get-AliasPattern($exe) {
+function script:Get-AliasPattern($exe) {
 	$aliases = @($exe, "$exe\.ps1", "$exe\.cmd") + @(Get-Alias | Where-Object { $_.Definition -eq $exe } | Select-Object -Exp Name)
 	"($($aliases -join '|'))"
 }
@@ -249,13 +239,34 @@ if (Test-Path Function:\TabExpansion) {
 	Rename-Item Function:\TabExpansion TabExpansionBackup_Scoop
 }
 
+$script:ScoopIsAlias = $false
+function script:ScoopAliasReplace([String]$cli) {
+	foreach ($k in $script:ScoopAliasMap.Keys) {
+		if ($cli -match "^$k\s+.*$") {
+			$script:ScoopIsAlias = $true
+			$cli = [regex]::Replace($cli, "^$k\b", $script:ScoopAliasMap[$k])
+		}
+	}
+	return $cli
+}
+
 function TabExpansion($line, $lastWord) {
 	$lastBlock = [regex]::Split($line, '[|;]')[-1].TrimStart()
 
 	switch -regex ($lastBlock) {
 		# Execute Scoop tab completion for all Scoop-related commands
-		"^$(Get-AliasPattern scoop) (.*)" {
-			ScoopTabExpansion $lastBlock
+		"^$(Get-AliasPattern scoop)\s+(?<rest>.*)$" {
+			$rest = $matches['rest']
+			$script:ScoopIsAlias = $false
+			if ($rest -match '^\S+\s+.*$') {
+				$rest = ScoopAliasReplace $rest
+			}
+			if ($script:ScoopIsAlias) {
+				TabExpansion $rest $lastWord
+			}
+			else {
+				ScoopTabExpansion $rest
+			}
 		}
 
 		# Fall back on existing tab expansion
@@ -268,9 +279,9 @@ function TabExpansion($line, $lastWord) {
 }
 
 $exportModuleMemberParams = @{
-    Function = @(
-        'TabExpansion'
-    )
+	Function = @(
+		'TabExpansion'
+	)
 }
 
 Export-ModuleMember @exportModuleMemberParams

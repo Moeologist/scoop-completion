@@ -20,7 +20,7 @@ scoop install scoop-completion
 如果使用
 $profile.CurrentUserAllHosts | $profile.AllUsersCurrentHost | $profile.AllUsersAllHosts
 替代 $profile，
-scoop-completion 将为 其他Host | 其他用户 | 两者工作
+scoop-completion 将为 所有Host | 所以用户 | 两者 工作
 [Docs](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-6#the-profile-variable)
 ```powershell
 # get scoop installation

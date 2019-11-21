@@ -3,7 +3,7 @@
 # Thanks to Posh-Git - https://github.com/dahlbyk/posh-git
 
 try {
-	$scoopdir = $(Get-Item $(Get-Command -ErrorAction Stop scoop).Path).Directory.Parent.FullName
+	$script:scoopdir = $(Get-Item $(Get-Command -ErrorAction Stop scoop).Path).Directory.Parent.FullName
 }
 catch { Write-Warning 'no scoop installed' }
 
@@ -83,7 +83,7 @@ function script:ScoopExpandCmd($filter, $includeAliases) {
 
 function script:ScoopLocalPackages($filter) {
 	if ($global:ScoopCompletionUseLocalData) {
-		@(& Get-ChildItem -Path $scoopdir\apps -Name -Directory |
+		@(& Get-ChildItem -Path $script:scoopdir\apps -Name -Directory |
 			Where-Object { $_ -ne "scoop" } |
 			Where-Object { $_ -like "$filter*" }
 		)
@@ -100,9 +100,8 @@ $script:ScoopRemoteCache = @()
 $script:ScoopRemoteCacheNoInit = $true
 function script:ScoopRemotePackages($filter) {
 	if ($global:ScoopCompletionUseLocalData) {
-		# FIXME:remove Recurse
-		@(& Get-ChildItem -Path $scoopdir\buckets\ -Name | 
-			ForEach-Object { Get-ChildItem -Path $scoopdir\buckets\$_\bucket -Name -Filter *.json } |
+		@(& Get-ChildItem -Path $script:scoopdir\buckets\ -Name | 
+			ForEach-Object { Get-ChildItem -Path $script:scoopdir\buckets\$_\bucket -Name -Filter *.json } |
 			ForEach-Object { if ( $_ -match '^.*?([\w][\-\.\w]*)\.json$' ) { "$($Matches[1])" } } |
 			Where-Object { $_ -like "$filter*" }
 		)

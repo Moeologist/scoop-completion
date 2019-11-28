@@ -1,7 +1,7 @@
 {
     "homepage": "https://github.com/Moeologist/scoop-completion",
     "license": "MIT",
-    "version": "0.2.1",
+    "version": "0.2.0",
     "url": [
 		"https://raw.githubusercontent.com/Moeologist/scoop-completion/v0.2.0/src/scoop-completion.psm1",
 		"https://raw.githubusercontent.com/Moeologist/scoop-completion/v0.2.0/src/scoop-completion.psd1"

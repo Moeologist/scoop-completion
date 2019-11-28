@@ -3,7 +3,7 @@
 # Thanks to Posh-Git - https://github.com/dahlbyk/posh-git
 
 try {
-	$script:scoopdir = $(Get-Item $(Get-Command -ErrorAction Stop scoop).Path).Directory.Parent.FullName
+	$script:scoopdir = $(Get-Item -ErrorAction Stop $(Get-Command -ErrorAction Stop scoop).Path).Directory.Parent.FullName
 }
 catch { Write-Warning 'no scoop installed' }
 

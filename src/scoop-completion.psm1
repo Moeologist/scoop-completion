@@ -7,11 +7,6 @@ try {
 }
 catch { Write-Warning 'no scoop installed' }
 
-if ( -not (Get-Variable ScoopCompletionUseLocalData -Scope Global -ErrorAction SilentlyContinue)) {
-	$global:ScoopCompletionUseLocalData = $true
-	$global:ScoopCompletionUseWordMatch = $false
-}
-
 $script:ScoopCommands = @('alias', 'bucket', 'cache', 'checkup', 'cleanup', 'config', 'create', 'depends', 'export', 'help', 'hold', 'home',
 	'info', 'install', 'list', 'prefix', 'reset', 'search', 'status', 'unhold', 'uninstall', 'update', 'virustotal', 'which')
 
@@ -82,42 +77,18 @@ function script:ScoopExpandCmd($filter, $includeAliases) {
 }
 
 function script:ScoopLocalPackages($filter) {
-	if ($global:ScoopCompletionUseLocalData) {
-		@(& Get-ChildItem -Path $script:scoopdir\apps -Name -Directory |
-			Where-Object { $_ -ne "scoop" } |
-			Where-Object { $_ -like "$filter*" }
-		)
-	}
-	else {
-		@(& scoop list 6>&1 |
-			ForEach-Object { if ( $_ -match '^\s*([\w][\-\.\w]*) $' ) { "$($Matches[1])" } } |
-			Where-Object { $_ -like "$filter*" }
-		)
-	}
+	@(& Get-ChildItem -Path $script:scoopdir\apps -Name -Directory |
+		Where-Object { $_ -ne "scoop" } |
+		Where-Object { $_ -like "$filter*" }
+	)
 }
 
-$script:ScoopRemoteCache = @()
-$script:ScoopRemoteCacheNoInit = $true
 function script:ScoopRemotePackages($filter) {
-	if ($global:ScoopCompletionUseLocalData) {
-		@(& Get-ChildItem -Path $script:scoopdir\buckets\ -Name | 
-			ForEach-Object { Get-ChildItem -Path $script:scoopdir\buckets\$_\bucket -Name -Filter *.json } |
-			ForEach-Object { if ( $_ -match '^.*?([\w][\-\.\w]*)\.json$' ) { "$($Matches[1])" } } |
-			Where-Object { $_ -like "$filter*" }
-		)
-	}
-	else {
-		if ($script:ScoopRemoteCacheNoInit) {
-			$script:ScoopRemoteCache = @(& scoop search 6>&1 |
-				ForEach-Object { if ( $_ -match '^\s*([\w][\-\.\w]*) \(.+\)$' ) { "$($Matches[1])" } } |
-				Sort-Object -Unique
-			)
-			$script:ScoopRemoteCacheNoInit = $false
-		}
-		@($script:ScoopRemoteCache |
-			Where-Object { $_ -like "$filter*" }
-		)
-	}
+	@(& Get-ChildItem -Path $script:scoopdir\buckets\ -Name | 
+		ForEach-Object { Get-ChildItem -Path $script:scoopdir\buckets\$_\bucket -Name -Filter *.json } |
+		ForEach-Object { if ( $_ -match '^([\w][\-\.\w]*)\.json$' ) { "$($Matches[1])" } } |
+		Where-Object { $_ -like "$filter*" }
+	)
 }
 
 function script:ScoopLocalCaches($filter) {
@@ -246,6 +217,7 @@ function script:ScoopAliasReplace([String]$cli) {
 		if ($cli -match "^$k\s+.*$") {
 			$script:ScoopIsAlias = $true
 			$cli = [regex]::Replace($cli, "^$k\b", $script:ScoopAliasMap[$k])
+			$cli = [regex]::Replace($cli, '\s+\$args', "")
 		}
 	}
 	return $cli

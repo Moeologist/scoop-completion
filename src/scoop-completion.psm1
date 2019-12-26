@@ -228,7 +228,7 @@ function TabExpansion($line, $lastWord) {
 
 	switch -regex ($lastBlock) {
 		# Execute Scoop tab completion for all Scoop-related commands
-		"^$(Get-AliasPattern scoop)\s+(?<rest>.*)$" {
+		"^(sudo\s+)?$(Get-AliasPattern scoop)\s+(?<rest>.*)$" {
 			$rest = $matches['rest']
 			$script:ScoopIsAlias = $false
 			if ($rest -match '^\S+\s+.*$') {

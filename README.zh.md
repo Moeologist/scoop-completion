@@ -17,11 +17,8 @@ scoop install scoop-completion
 
 在当前 shell 启用补全:
 ```powershell
-# get scoop installation
-$scoopdir = $(Get-Item $(Get-Command scoop).Path).Directory.Parent.FullName
-
 # enable completion in current shell
-Import-Module "$scoopdir\modules\scoop-completion"
+Import-Module "$($(Get-Item $(Get-Command scoop).Path).Directory.Parent.FullName)\modules\scoop-completion"
 ```
 
 自动加载，请手动修改 $Profile。如果希望补全为 所有用户 | 所有host 工作，请阅读 [Docs](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-6#the-profile-variable)
@@ -32,7 +29,10 @@ if (!(Test-Path $profile)) { New-Item -Path $profile -ItemType "file" -Force }
 # print $profile path
 $profile
 ```
-在文本编辑器打开 $profile，然后添加启用代码（$scoopdir 和 Import-Module 行）到该文件。
+在文本编辑器打开 $profile，然后添加启用代码（Import-Module 行）到该文件，为了避免不必要的错误提示，可以将其置入 try 块中。
+```powershell
+try { Import-Module -ErrorAction Stop "$($(Get-Item $(Get-Command -ErrorAction Stop scoop).Path).Directory.Parent.FullName)\modules\scoop-completion" } catch {}
+```
 
 用法:
 输入 "scoop [想补全的单词]" 然后按 Tab 键，Ctrl+Space 将触发菜单式的补全

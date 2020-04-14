@@ -2,9 +2,14 @@
 
 [中文](https://github.com/Moeologist/scoop-completion/blob/master/README.zh.md)
 
+---
+
+**Warning!!!**
+
 If your console print
 ```powershell
-Get-Content : Cannot find path 'C:\Dev\Scoop\shims\scoop-IsReadOnly.ps1' because it does not exist.
+Get-Content : Cannot find path 'D:\scoop\shims\scoop-IsReadOnly.ps1' because it does not exist.
+At D:\scoop\apps\scoop\current\lib\commands.ps1:22 char:19
 ...
 ...
 ```
@@ -42,15 +47,19 @@ if (!(Test-Path $profile)) { New-Item -Path $profile -ItemType "file" -Force }
 # print $profile path
 $profile
 ```
-Open $profile in your text editor, and put the enable code (Import-Module line) into this file. use try block if you want to avoid any error messages.
-```powershell
-# use try instead of Import-Module instantly
-try { Import-Module -ErrorAction Stop "$($(Get-Item $(Get-Command -ErrorAction Stop scoop).Path).Directory.Parent.FullName)\modules\scoop-completion" } catch {}
-```
+Open $profile in your text editor, and put the enable code (Import-Module line) into this file.
 
+---
 
 Usage:
-Type "scoop [something]" and press Tab key, Ctrl+Space will trigger menu-completion.
+Type "scoop [something]" and press Tab key will cycle completion items, Ctrl+Space will trigger menu-completion.
+
+Example:
+```powershell
+scoop ins[Press Tab]
+scoop install py[Press Ctrl+Space]
+scoop uninstall [Press Ctrl+Space]
+```
 
 ---
 

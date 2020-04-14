@@ -1,6 +1,24 @@
-# scoop 自动补全
+## scoop 自动补全
 
 [English](https://github.com/Moeologist/scoop-completion/blob/master/README.md)
+
+---
+
+**注意!!!**
+
+如果控制台输出
+```powershell
+Get-Content : Cannot find path 'D:\scoop\shims\scoop-IsReadOnly.ps1' because it does not exist.
+At D:\scoop\apps\scoop\current\lib\commands.ps1:22 char:19
+...
+...
+```
+阅读 [scoop issure 3528](https://github.com/lukesampson/scoop/issues/3528). 简单来说，事先运行
+```powershell
+scoop config alias @{}
+```
+
+---
 
 依赖:
 * [scoop](https://github.com/lukesampson/scoop)
@@ -29,13 +47,29 @@ if (!(Test-Path $profile)) { New-Item -Path $profile -ItemType "file" -Force }
 # print $profile path
 $profile
 ```
-在文本编辑器打开 $profile，然后添加启用代码（Import-Module 行）到该文件，为了避免不必要的错误提示，可以将其置入 try 块中。
-```powershell
-try { Import-Module -ErrorAction Stop "$($(Get-Item $(Get-Command -ErrorAction Stop scoop).Path).Directory.Parent.FullName)\modules\scoop-completion" } catch {}
-```
+在文本编辑器打开 $profile，然后添加启用代码（Import-Module 行）到该文件。
+
+---
 
 用法:
-输入 "scoop [想补全的单词]" 然后按 Tab 键，Ctrl+Space 将触发菜单式的补全
+输入 "scoop [想补全的内容]" 然后按 Tab 键将循环补全项，Ctrl+Space 将触发菜单式的补全
+
+例子:
+```powershell
+scoop ins[Press Tab]
+scoop install py[Press Ctrl+Space]
+scoop uninstall [Press Ctrl+Space]
+
+```
+
+---
+
+卸载:
+```powershell
+scoop uninstall scoop-completion
+scoop bucket rm scoop-completion
+```
+然后手动修改 $Profile (移除启用代码)
 
 ---
 

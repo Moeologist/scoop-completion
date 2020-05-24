@@ -4,22 +4,6 @@
 
 ---
 
-**Warning!!!**
-
-If your console print
-```powershell
-Get-Content : Cannot find path 'D:\scoop\shims\scoop-IsReadOnly.ps1' because it does not exist.
-At D:\scoop\apps\scoop\current\lib\commands.ps1:22 char:19
-...
-...
-```
-Read [scoop issure 3528](https://github.com/lukesampson/scoop/issues/3528). In short, run
-```powershell
-scoop config alias @{}
-```
-
----
-
 Presuppositions:
 * [scoop](https://github.com/lukesampson/scoop)
 * [PowerShell 5](https://aka.ms/wmf5download) (or later, include [PowerShell Core](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-windows?view=powershell-6))

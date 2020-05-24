@@ -4,22 +4,6 @@
 
 ---
 
-**注意!!!**
-
-如果控制台输出
-```powershell
-Get-Content : Cannot find path 'D:\scoop\shims\scoop-IsReadOnly.ps1' because it does not exist.
-At D:\scoop\apps\scoop\current\lib\commands.ps1:22 char:19
-...
-...
-```
-阅读 [scoop issure 3528](https://github.com/lukesampson/scoop/issues/3528). 简单来说，事先运行
-```powershell
-scoop config alias @{}
-```
-
----
-
 依赖:
 * [scoop](https://github.com/lukesampson/scoop)
 * [PowerShell 5](https://aka.ms/wmf5download) (或更新，包括 [PowerShell Core](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-windows?view=powershell-6))

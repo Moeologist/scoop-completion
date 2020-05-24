@@ -2,10 +2,35 @@
 # Project URL - https://github.com/Moeologist/scoop-completion
 # Thanks to Posh-Git - https://github.com/dahlbyk/posh-git
 
-try {
-	$script:scoopdir = $(Get-Item -ErrorAction Stop $(Get-Command -ErrorAction Stop scoop).Path).Directory.Parent.FullName
+# See scoop/lib/core.ps1
+function script:load_cfg($file) {
+	if (!(Test-Path $file)) {
+		return $null
+	}
+	try {
+		return (Get-Content $file -Raw | ConvertFrom-Json -ErrorAction Stop)
+	}
+	catch { }
 }
-catch { Write-Warning 'no scoop installed' }
+
+$script:configHome = $env:XDG_CONFIG_HOME, "$env:USERPROFILE\.config" | Select-Object -First 1
+$script:configFile = "$configHome\scoop\config.json"
+$script:scoopConfig = load_cfg $script:configFile
+
+function script:get_config($name, $default) {
+	if ($null -eq $scoopConfig.$name -and $null -ne $default) {
+		return $default
+	}
+	return $scoopConfig.$name
+}
+
+try {
+	$Script:scoopdir = $env:SCOOP, (get_config 'rootPath'), "$env:USERPROFILE\scoop" |
+	Where-Object { -not [String]::IsNullOrEmpty($_) } | Select-Object -First 1
+}
+catch { Write-Warning 'No scoop installed!' }
+
+$script:aliasMap = get_config 'alias'
 
 $script:ScoopCommands = @('alias', 'bucket', 'cache', 'checkup', 'cleanup', 'config', 'create', 'depends', 'export', 'help', 'hold', 'home',
 	'info', 'install', 'list', 'prefix', 'reset', 'search', 'status', 'unhold', 'uninstall', 'update', 'virustotal', 'which')
@@ -49,18 +74,14 @@ $script:ScoopCommandsWithShortParams = $ScoopShortParams.Keys -join '|'
 $script:ScoopCommandsWithParamValues = $ScoopParamValues.Keys -join '|'
 
 # 6> redirect Write-Host's output, (〒︿〒)
-$script:ScoopAliasMap = @{ }
-& scoop alias list 6>$null |
-Out-String -Stream |
-ForEach-Object { if ( $_ -match '^(?<alias>[\w]+)\s+(?<cmd>.*)$' ) {
-		$script:ScoopAliasMap[$matches['alias']] = $matches['cmd'].TrimEnd() 
-	} 
-}
-
 function script:ScoopAlias($filter) {
-	@($script:ScoopAliasMap.Keys |
-		Where-Object { $_ -like "$filter*" }
-	)
+	if ($null -ne $script:aliasMap) {
+		@($script:aliasMap.PSObject.Properties | Select-Object Name | ForEach-Object { $_.Name }
+			Where-Object { $_ -like "$filter*" }
+		)
+	} else {
+		@()
+	}
 }
 
 function script:ScoopExpandCmdParams($commands, $command, $filter) {
@@ -71,7 +92,7 @@ function script:ScoopExpandCmd($filter, $includeAliases) {
 	$cmdList = @()
 	$cmdList += $ScoopCommands
 	if ($includeAliases) {
-		$cmdList += ScoopAlias
+		$cmdList += ScoopAlias($filter)
 	}
 	$cmdList -like "$filter*" | Sort-Object
 }
@@ -211,18 +232,6 @@ if (Test-Path Function:\TabExpansion) {
 	Rename-Item Function:\TabExpansion TabExpansionBackup_Scoop
 }
 
-$script:ScoopIsAlias = $false
-function script:ScoopAliasReplace([String]$cli) {
-	foreach ($k in $script:ScoopAliasMap.Keys) {
-		if ($cli -match "^$k\s+.*$") {
-			$script:ScoopIsAlias = $true
-			$cli = [regex]::Replace($cli, "^$k\b", $script:ScoopAliasMap[$k])
-			$cli = [regex]::Replace($cli, '\s+\$args', "")
-		}
-	}
-	return $cli
-}
-
 function TabExpansion($line, $lastWord) {
 	$lastBlock = [regex]::Split($line, '[|;]')[-1].TrimStart()
 
@@ -230,16 +239,7 @@ function TabExpansion($line, $lastWord) {
 		# Execute Scoop tab completion for all Scoop-related commands
 		"^(sudo\s+)?$(Get-AliasPattern scoop)\s+(?<rest>.*)$" {
 			$rest = $matches['rest']
-			$script:ScoopIsAlias = $false
-			if ($rest -match '^\S+\s+.*$') {
-				$rest = ScoopAliasReplace $rest
-			}
-			if ($script:ScoopIsAlias) {
-				TabExpansion $rest $lastWord
-			}
-			else {
-				ScoopTabExpansion $rest
-			}
+			ScoopTabExpansion $rest
 		}
 
 		# Fall back on existing tab expansion

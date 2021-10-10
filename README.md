@@ -20,7 +20,7 @@ scoop install scoop-completion
 Enable completion in current shell:
 ```powershell
 # enable completion in current shell, use absolute path because PowerShell Core not respect $env:PSModulePath
-Import-Module "$($(Get-Item $(Get-Command scoop).Path).Directory.Parent.FullName)\modules\scoop-completion"
+Import-Module "$($(Get-Item $(Get-Command scoop.ps1).Path).Directory.Parent.FullName)\modules\scoop-completion"
 ```
 
 Auto-load, please modify $Profile manually. If you want completion to work for allusers | allhosts, read [Docs](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-6#the-profile-variable)

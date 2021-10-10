@@ -20,7 +20,7 @@ scoop install scoop-completion
 在当前 shell 启用补全:
 ```powershell
 # enable completion in current shell
-Import-Module "$($(Get-Item $(Get-Command scoop).Path).Directory.Parent.FullName)\modules\scoop-completion"
+Import-Module "$($(Get-Item $(Get-Command scoop.ps1).Path).Directory.Parent.FullName)\modules\scoop-completion"
 ```
 
 自动加载，请手动修改 $Profile。如果希望补全为 所有用户 | 所有host 工作，请阅读 [Docs](https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_profiles?view=powershell-6#the-profile-variable)

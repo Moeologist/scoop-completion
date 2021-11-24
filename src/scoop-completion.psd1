@@ -6,7 +6,7 @@ Description = 'A Scoop tab completion module for PowerShell.'
 RootModule = 'scoop-completion.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.2.3'
+ModuleVersion = '0.2.3' # TODO: 0.3.0
 
 # ID used to uniquely identify this module
 GUID = 'e79be23b-d149-46c8-85a3-620f2669d2e1'
@@ -21,7 +21,7 @@ PrivateData =
     PSData =
     @{
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('scoop', 'tab', 'completion')
+        Tags = @('scoop', 'tab', 'tab-completion', 'completion', 'Register-ArgumentCompleter')
 
 		LicenseUri = 'https://opensource.org/licenses/MIT'
 

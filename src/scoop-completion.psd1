@@ -14,11 +14,6 @@ GUID = 'e79be23b-d149-46c8-85a3-620f2669d2e1'
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '5.0'
 
-FunctionsToExport = @('TabExpansion')
-CmdletsToExport = @()
-VariablesToExport = @()
-AliasesToExport = @()
-
 # Private data to pass to the module specified in RootModule/ModuleToProcess.
 # This may also contain a PSData hashtable with additional module metadata used by PowerShell.
 PrivateData =

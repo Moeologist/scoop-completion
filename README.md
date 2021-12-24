@@ -10,8 +10,8 @@ Presuppositions:
 
 Install via scoop:
 ```powershell
-# add auto-update bucket
-scoop bucket add scoop-completion https://github.com/Moeologist/scoop-completion
+# add extras bucket
+scoop bucket add extras
 
 # install
 scoop install scoop-completion

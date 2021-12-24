@@ -51,7 +51,7 @@ Uninstall:
 ```powershell
 scoop uninstall scoop-completion
 ```
-Then, modify $Profile to remove initialization calls
+Then, modify *$Profile* to remove initialization calls
 
 ---
 

@@ -10,8 +10,8 @@
 
 通过 scoop 安装:
 ```powershell
-# add auto-update bucket
-scoop bucket add scoop-completion https://github.com/Moeologist/scoop-completion
+# add extras bucket
+scoop bucket add extras
 
 # install
 scoop install scoop-completion
@@ -51,7 +51,6 @@ scoop uninstall [Press Ctrl+Space]
 卸载:
 ```powershell
 scoop uninstall scoop-completion
-scoop bucket rm scoop-completion
 ```
 然后手动修改 $Profile (移除启用代码)
 

@@ -10,8 +10,8 @@ Presuppositions:
 
 Install via scoop:
 ```powershell
-# add auto-update bucket
-scoop bucket add scoop-completion https://github.com/Moeologist/scoop-completion
+# add extras bucket
+scoop bucket add extras
 
 # install
 scoop install scoop-completion
@@ -44,6 +44,16 @@ scoop ins[Press Tab]
 scoop install py[Press Ctrl+Space]
 scoop uninstall [Press Ctrl+Space]
 ```
+
+---
+
+Uninstall:
+```powershell
+scoop uninstall scoop-completion
+```
+Then, modify *$Profile* to remove initialization calls
+
+---
 
 ---
 

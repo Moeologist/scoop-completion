@@ -32,30 +32,38 @@ catch { Write-Warning 'No scoop installed!' }
 
 $script:aliasMap = get_config 'alias'
 
-$script:ScoopCommands = @('alias', 'bucket', 'cache', 'checkup', 'cleanup', 'config', 'create', 'depends', 'export', 'help', 'hold', 'home',
-	'info', 'install', 'list', 'prefix', 'reset', 'search', 'status', 'unhold', 'uninstall', 'update', 'virustotal', 'which')
+$script:ScoopCommands = @('alias', 'bucket', 'cache', 'cat', 'checkup', 'cleanup', 'config', 'create', 'depends', 'download', 'export', 'help', 'hold', 'home',
+	'import', 'info', 'install', 'list', 'prefix', 'reset', 'search', 'shim', 'status', 'unhold', 'uninstall', 'update', 'virustotal', 'which')
+
+$script:ScoopConfigParams = @('7ZIPEXTRACT_USE_EXTERNAL', 'MSIEXTRACT_USE_LESSMSI', 'NO_JUNCTIONS', 'SCOOP_REPO', 'SCOOP_BRANCH', 'proxy', 'default_architecture', 'debug', 'force_update', 'show_update_log', 'manifest_review', 'shim', 'rootPath', 'globalPath', 'cachePath', 'gh_token', 'virustotal_api_key', 'cat_style', 'ignore_running_processes', 'private_hosts', 'aria2-enabled', 'aria2-warning-enabled', 'aria2-retry-wait', 'aria2-split', 'aria2-max-connection-per-server', 'aria2-min-split-size', 'aria2-options')
 
 $script:ScoopSubcommands = @{
 	alias  = 'add list rm'
 	bucket = 'add list known rm'
 	cache  = 'rm show'
-	config = 'rm'
+	config = (@('rm') + $script:ScoopConfigParams) -join ' '
+	# add 'rm' to config
+	shim   = 'add list rm info alter'
 }
 
 $script:ScoopShortParams = @{
-	install    = 'g i k s a'
+	install    = 'g i k u s a'
 	uninstall  = 'g p'
 	cleanup    = 'g'
 	virustotal = 'a s n'
-	update     = 'f g i k s q'
+	update     = 'f g i k s q a'
+	shim       = 'g'
+	download   = 'f h u a'
 }
 
 $script:ScoopLongParams = @{
-	install    = 'global independent no-cache skip arch'
+	install    = 'global independent no-cache no-update-scoop skip arch'
 	uninstall  = 'global purge'
 	cleanup    = 'global'
 	virustotal = 'arch scan no-depends'
-	update     = 'force global independent no-cache skip quiet'
+	update     = 'force global independent no-cache skip quiet all'
+	shim       = 'global'
+	download   = 'force no-hash-check no-update-scoop arch'
 }
 
 $script:ScoopParamValues = @{
@@ -64,6 +72,10 @@ $script:ScoopParamValues = @{
 		arch = '32bit 64bit'
 	}
 	virustotal = @{
+		a    = '32bit 64bit'
+		arch = '32bit 64bit'
+	}
+	download = @{
 		a    = '32bit 64bit'
 		arch = '32bit 64bit'
 	}
@@ -104,8 +116,12 @@ function script:ScoopLocalPackages($filter) {
 	)
 }
 
+function script:ScoopConfigParamsFilter($filter) {
+	$ScoopConfigParams -like "$filter*"
+}
+
 function script:ScoopRemotePackages($filter) {
-	@(& Get-ChildItem -Path $script:scoopdir\buckets\ -Name | 
+	@(& Get-ChildItem -Path $script:scoopdir\buckets\ -Name |
 		ForEach-Object { Get-ChildItem -Path $script:scoopdir\buckets\$_\bucket -Name -Filter *.json } |
 		ForEach-Object { if ( $_ -match '^([\w][\-\.\w]*)\.json$' ) { "$($Matches[1])" } } |
 		Where-Object { $_ -like "$filter*" }
@@ -169,6 +185,16 @@ function script:ScoopTabExpansion($lastBlock) {
 		# Handles uninstall package names
 		"^(uninstall|cleanup|virustotal|update|prefix|reset|hold|unhold)\s+(?:.+\s+)?(?<package>[\w][\-\.\w]*)?$" {
 			return ScoopLocalPackages $matches['package']
+		}
+
+		# Handles download and cat package names
+		"^(download|cat)\s+(?:.+\s+)?(?<package>[\w][\-\.\w]*)?$" {
+			return ScoopRemotePackages $matches['package'] + ScoopLocalPackages $matches['package']
+		}
+
+		# Handles config param names
+		"^config rm\s+(?:.+\s+)?(?<param>[\w][\-\.\w]*)?$" {
+			return  script:ScoopConfigParamsFilter $matches['param']
 		}
 
 		# Handles install package names

@@ -129,9 +129,8 @@ function script:ScoopRemotePackages($filter) {
 }
 
 function script:ScoopLocalCaches($filter) {
-	@(& scoop cache show $filter |
-		Out-String -Stream |
-		ForEach-Object { if ( $_ -match '^\s*[\.1-9]+ [KMGB]+ ([\w][\-\.\w]*) .*$' ) { "$($Matches[1])" } } |
+	@(& scoop cache show |
+		Select-Object -ExpandProperty Name |
 		Sort-Object -Unique |
 		Where-Object { $_ -like "$filter*" }
 	)

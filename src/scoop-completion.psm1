@@ -81,6 +81,22 @@ $script:ScoopParamValues = @{
 	}
 }
 
+$script:ScoopConfigParamValues = @{
+	"7ZIPEXTRACT_USE_EXTERNAL" = 'true false'
+	MSIEXTRACT_USE_LESSMSI     = 'true false'
+	NO_JUNCTIONS               = 'true false'
+	SCOOP_BRANCH               = 'master develop'
+	default_architecture       = '32bit 64bit'
+	debug                      = 'true false'
+	force_update               = 'true false'
+	show_update_log            = 'true false'
+	manifest_review            = 'true false'
+	shim                       = 'kiennq scoopcs 71'
+	ignore_running_processes   = 'true false'
+	"aria2-enabled"            = 'true false'
+	"aria2-warning-enabled"    = 'true false'
+}
+
 $script:ScoopCommandsWithLongParams = $ScoopLongParams.Keys -join '|'
 $script:ScoopCommandsWithShortParams = $ScoopShortParams.Keys -join '|'
 $script:ScoopCommandsWithParamValues = $ScoopParamValues.Keys -join '|'
@@ -118,6 +134,12 @@ function script:ScoopLocalPackages($filter) {
 
 function script:ScoopConfigParamsFilter($filter) {
 	$ScoopConfigParams -like "$filter*"
+}
+
+function script:ScoopExpandConfigParamValues($param, $filter) {
+	$ScoopConfigParamValues[$param] -split ' ' |
+	Where-Object { $_ -like "$filter*" } |
+	Sort-Object
 }
 
 function script:ScoopRemotePackages($filter) {
@@ -229,6 +251,11 @@ function script:ScoopTabExpansion($lastBlock) {
 		# Handles Scoop <cmd> <subcmd>
 		"^(?<cmd>$($ScoopSubcommands.Keys -join '|'))\s+(?<op>\S*)$" {
 			return ScoopExpandCmdParams $ScoopSubcommands $matches['cmd'] $matches['op']
+		}
+
+		# Handles Scoop config <param> <value>
+		"^config (?<param>[\w][\-\.\w]*)\s+(?<value>\w*)$" {
+			return ScoopExpandConfigParamValues $matches['param'] $matches['value']
 		}
 
 		# Handles Scoop <cmd>

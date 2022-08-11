@@ -54,6 +54,7 @@ $script:ScoopShortParams = @{
 	update     = 'f g i k s q a'
 	shim       = 'g'
 	download   = 'f h u a'
+	status     = 'l'
 }
 
 $script:ScoopLongParams = @{
@@ -64,6 +65,7 @@ $script:ScoopLongParams = @{
 	update     = 'force global independent no-cache skip quiet all'
 	shim       = 'global'
 	download   = 'force no-hash-check no-update-scoop arch'
+	status     = 'local'
 }
 
 $script:ScoopParamValues = @{

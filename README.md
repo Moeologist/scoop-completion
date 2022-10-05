@@ -55,8 +55,6 @@ Then, modify *$Profile* to remove initialization calls
 
 ---
 
----
-
 Install from PSGallery **(deprecated)**:
 ```powershell
 Install-Module -AllowClobber -Name scoop-completion -Scope CurrentUser

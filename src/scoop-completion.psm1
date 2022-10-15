@@ -32,10 +32,66 @@ catch { Write-Warning 'No scoop installed!' }
 
 $script:aliasMap = get_config 'alias'
 
-$script:ScoopCommands = @('alias', 'bucket', 'cache', 'cat', 'checkup', 'cleanup', 'config', 'create', 'depends', 'download', 'export', 'help', 'hold', 'home',
-	'import', 'info', 'install', 'list', 'prefix', 'reset', 'search', 'shim', 'status', 'unhold', 'uninstall', 'update', 'virustotal', 'which')
+$script:ScoopCommands = @(
+	'alias',
+	'bucket',
+	'cache',
+	'cat',
+	'checkup',
+	'cleanup',
+	'config',
+	'create',
+	'depends',
+	'download',
+	'export',
+	'help',
+	'hold',
+	'home',
+	'import',
+	'info',
+	'install',
+	'list',
+	'prefix',
+	'reset',
+	'search',
+	'shim',
+	'status',
+	'unhold',
+	'uninstall',
+	'update',
+	'virustotal',
+	'which'
+)
 
-$script:ScoopConfigParams = @('7ZIPEXTRACT_USE_EXTERNAL', 'MSIEXTRACT_USE_LESSMSI', 'NO_JUNCTIONS', 'SCOOP_REPO', 'SCOOP_BRANCH', 'proxy', 'default_architecture', 'debug', 'force_update', 'show_update_log', 'manifest_review', 'shim', 'rootPath', 'globalPath', 'cachePath', 'gh_token', 'virustotal_api_key', 'cat_style', 'ignore_running_processes', 'private_hosts', 'aria2-enabled', 'aria2-warning-enabled', 'aria2-retry-wait', 'aria2-split', 'aria2-max-connection-per-server', 'aria2-min-split-size', 'aria2-options')
+$script:ScoopConfigParams = @(
+	'7ZIPEXTRACT_USE_EXTERNAL',
+	'MSIEXTRACT_USE_LESSMSI',
+	'NO_JUNCTIONS',
+	'SCOOP_REPO',
+	'SCOOP_BRANCH',
+	'proxy',
+	'default_architecture',
+	'debug',
+	'force_update',
+	'show_update_log',
+	'manifest_review',
+	'shim',
+	'rootPath',
+	'globalPath',
+	'cachePath',
+	'gh_token',
+	'virustotal_api_key',
+	'cat_style',
+	'ignore_running_processes',
+	'private_hosts',
+	'aria2-enabled',
+	'aria2-warning-enabled',
+	'aria2-retry-wait',
+	'aria2-split',
+	'aria2-max-connection-per-server',
+	'aria2-min-split-size',
+	'aria2-options'
+)
 
 $script:ScoopSubcommands = @{
 	alias  = 'add list rm'

@@ -25,17 +25,78 @@ function script:get_config($name, $default) {
 }
 
 try {
-	$Script:scoopdir = $env:SCOOP, (get_config 'rootPath'), "$env:USERPROFILE\scoop" |
+	$Script:scoopdir = $env:SCOOP, (get_config 'root_path'), "$env:USERPROFILE\scoop" |
 	Where-Object { -not [String]::IsNullOrEmpty($_) } | Select-Object -First 1
 }
 catch { Write-Warning 'No scoop installed!' }
 
 $script:aliasMap = get_config 'alias'
 
-$script:ScoopCommands = @('alias', 'bucket', 'cache', 'cat', 'checkup', 'cleanup', 'config', 'create', 'depends', 'download', 'export', 'help', 'hold', 'home',
-	'import', 'info', 'install', 'list', 'prefix', 'reset', 'search', 'shim', 'status', 'unhold', 'uninstall', 'update', 'virustotal', 'which')
+# See scoop/libexec/
+$script:ScoopCommands = @(
+	'alias',
+	'bucket',
+	'cache',
+	'cat',
+	'checkup',
+	'cleanup',
+	'config',
+	'create',
+	'depends',
+	'download',
+	'export',
+	'help',
+	'hold',
+	'home',
+	'import',
+	'info',
+	'install',
+	'list',
+	'prefix',
+	'reset',
+	'search',
+	'shim',
+	'status',
+	'unhold',
+	'uninstall',
+	'update',
+	'virustotal',
+	'which'
+)
 
-$script:ScoopConfigParams = @('7ZIPEXTRACT_USE_EXTERNAL', 'MSIEXTRACT_USE_LESSMSI', 'NO_JUNCTIONS', 'SCOOP_REPO', 'SCOOP_BRANCH', 'proxy', 'default_architecture', 'debug', 'force_update', 'show_update_log', 'manifest_review', 'shim', 'rootPath', 'globalPath', 'cachePath', 'gh_token', 'virustotal_api_key', 'cat_style', 'ignore_running_processes', 'private_hosts', 'aria2-enabled', 'aria2-warning-enabled', 'aria2-retry-wait', 'aria2-split', 'aria2-max-connection-per-server', 'aria2-min-split-size', 'aria2-options')
+# See scoop/libexec/scoop-config.ps1
+$script:ScoopConfigParams = @(
+	# 'last_update' would be set by scoop
+	'use_external_7zip',
+	'use_lessmsi',
+	'no_junction',
+	'scoop_repo',
+	'scoop_branch',
+	'proxy',
+	'autostash_on_conflict',
+	'default_architecture',
+	'debug',
+	'force_update',
+	'show_update_log',
+	'show_manifest',
+	'shim',
+	'root_path',
+	'global_path',
+	'cache_path',
+	'gh_token',
+	'virustotal_api_key',
+	'cat_style',
+	'ignore_running_processes',
+	'private_hosts',
+	'hold_update_until',
+	'aria2-enabled',
+	'aria2-warning-enabled',
+	'aria2-retry-wait',
+	'aria2-split',
+	'aria2-max-connection-per-server',
+	'aria2-min-split-size',
+	'aria2-options'
+)
 
 $script:ScoopSubcommands = @{
 	alias  = 'add list rm'
@@ -83,20 +144,38 @@ $script:ScoopParamValues = @{
 	}
 }
 
+# See scoop/libexec/scoop-config.ps1
+# TODO:display explanation of these settings
 $script:ScoopConfigParamValues = @{
-	"7ZIPEXTRACT_USE_EXTERNAL" = 'true false'
-	MSIEXTRACT_USE_LESSMSI     = 'true false'
-	NO_JUNCTIONS               = 'true false'
-	SCOOP_BRANCH               = 'master develop'
+	use_external_7zip          = 'true false'
+	use_lessmsi                = 'true false'
+	no_junction                = 'true false'
+	# scoop_repo
+	scoop_branch               = 'master develop'
+	# proxy
+	autostash_on_conflict      = 'true false'
 	default_architecture       = '32bit 64bit'
 	debug                      = 'true false'
 	force_update               = 'true false'
 	show_update_log            = 'true false'
-	manifest_review            = 'true false'
+	show_manifest              = 'true false'
 	shim                       = 'kiennq scoopcs 71'
+	# root_path
+	# global_path
+	# cache_path
+	# gh_token
+	# virustotal_api_key
+	cat_style                  = 'default auto full plain changes header header-filename header-filesize grid rule numbers snip'
 	ignore_running_processes   = 'true false'
+	# private_hosts
+	# hold_update_until
 	"aria2-enabled"            = 'true false'
 	"aria2-warning-enabled"    = 'true false'
+	# 'aria2-retry-wait'
+	# 'aria2-split',
+	# 'aria2-max-connection-per-server',
+	# 'aria2-min-split-size',
+	# 'aria2-options'
 }
 
 $script:ScoopCommandsWithLongParams = $ScoopLongParams.Keys -join '|'

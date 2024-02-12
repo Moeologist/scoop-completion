@@ -356,38 +356,31 @@ function script:ScoopTabExpansion($lastBlock) {
 	}
 }
 
-function script:Get-AliasPattern($exe) {
-	$aliases = @($exe, "$exe\.ps1", "$exe\.cmd") + @(Get-Alias | Where-Object { $_.Definition -eq $exe } | Select-Object -Exp Name)
-	"($($aliases -join '|'))"
+# Register-ArgumentCompleter impl, should work fork Windows PowerShell 5.1 and PowerShell Core (all version)
+# Old TabExpansion has been removed, if you have a compatibility issue, please report.
+
+# Thanks to mklement0, https://github.com/Moeologist/scoop-completion/issues/35#issuecomment-1897498690
+
+function script:Get-AliasNames($exe) {
+	@($exe, "$exe.ps1", "$exe.cmd") + @(Get-Alias | Where-Object { $_.Definition -eq $exe } | Select-Object -Exp Name)
 }
 
-if (Test-Path Function:\TabExpansion) {
-	Rename-Item Function:\TabExpansion TabExpansionBackup_Scoop
+Register-ArgumentCompleter -Native -CommandName (Get-AliasNames scoop) -ScriptBlock {
+	param($wordToComplete, $commandAst, $cursorColumn)
+
+	# NOTE:
+	# * The stringified form of $commandAst is the command's own command line (irrespective of
+	#   whether other statements are on the same line or whether it is part of a pipeline).
+	# * The command name itself - assumed to  contain no spaces - is removed, so that only the
+	#   list of arguments is passed to ScoopTabExpansion.
+	# * However, trailing whitespace is trimmed in the string representation of $commandAst. 
+	#   Therefore, when the actual command line ends in space(s), they must be added back
+	#   so that ScoopTabExpansion recognizes the start of a new argument.
+	#   .TrimStart() ensures that if there are no arguments yet at all, the empty string is passed,
+	#    which is what ScoopTabExpansion expects.
+	$ownCommandLine = [string] $commandAst
+	$ownCommandLine = $ownCommandLine.Substring(0, [Math]::Min($ownCommandLine.Length, $cursorColumn))
+	$argList = (($ownCommandLine -replace '^\S+\s*') + ' ' * ($cursorColumn - $ownCommandLine.Length)).TrimStart()
+
+	ScoopTabExpansion $argList
 }
-
-function TabExpansion($line, $lastWord) {
-	$lastBlock = [regex]::Split($line, '[|;]')[-1].TrimStart()
-
-	switch -regex ($lastBlock) {
-		# Execute Scoop tab completion for all Scoop-related commands
-		"^(sudo\s+)?$(Get-AliasPattern scoop)\s+(?<rest>.*)$" {
-			$rest = $matches['rest']
-			ScoopTabExpansion $rest
-		}
-
-		# Fall back on existing tab expansion
-		default {
-			if (Test-Path Function:\TabExpansionBackup_Scoop) {
-				TabExpansionBackup_Scoop $line $lastWord
-			}
-		}
-	}
-}
-
-$exportModuleMemberParams = @{
-	Function = @(
-		'TabExpansion'
-	)
-}
-
-Export-ModuleMember @exportModuleMemberParams

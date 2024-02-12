@@ -6,7 +6,7 @@ Description = 'A Scoop tab completion module for PowerShell.'
 RootModule = 'scoop-completion.psm1'
 
 # Version number of this module.
-ModuleVersion = '0.2.4'
+ModuleVersion = '0.3.0'
 
 # ID used to uniquely identify this module
 GUID = 'e79be23b-d149-46c8-85a3-620f2669d2e1'
@@ -14,7 +14,7 @@ GUID = 'e79be23b-d149-46c8-85a3-620f2669d2e1'
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '5.0'
 
-FunctionsToExport = @('TabExpansion')
+FunctionsToExport = @()
 CmdletsToExport = @()
 VariablesToExport = @()
 AliasesToExport = @()
